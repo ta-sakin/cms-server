@@ -1,24 +1,50 @@
 const { cloudinary } = require("../utils/cloudinary");
+const {
+  createNewComplain,
+  findComplainByProperty,
+} = require("./complainsFunc");
 
 const complainService = async ({
   address,
   ward,
   description,
   imgUrls,
-  type,
+  complainType,
+  phone,
 }) => {
   try {
-    console.log("imgUrls", imgUrls);
     const promises = [];
-    imgUrls.forEach(async (img) => {
-      const response = await cloudinary.uploader.upload({});
-      promises.push(response);
+    const attachment = [];
+    await imgUrls.forEach((img) => {
+      promises.push(
+        cloudinary.uploader.upload(img, {
+          folder: "cms-app",
+        })
+      );
     });
-    const res = await Promise.all(promises);
-    console.log(res);
-    return res;
+    const responses = await Promise.all(promises);
+    if (responses) {
+      responses.forEach((response) =>
+        attachment.push({
+          public_id: response.public_id,
+          url: response.url,
+        })
+      );
+    }
+    const user = await findComplainByProperty("phone", phone);
+    if (attachment && user) {
+      return await createNewComplain({
+        citizen_id: user._id,
+        address,
+        ward,
+        description,
+        attachment,
+        complainType,
+      });
+    }
   } catch (error) {
     console.log(error);
+    next(error);
   }
 };
 
