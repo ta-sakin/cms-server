@@ -5,6 +5,7 @@ const {
 } = require("./complainsFunc");
 
 const complainService = async ({
+  citizen_id,
   address,
   ward,
   description,
@@ -31,10 +32,10 @@ const complainService = async ({
         })
       );
     }
-    const user = await findComplainByProperty("phone", phone);
-    if (attachment && user) {
+    // const user = await findComplainByProperty("phone", phone);
+    if (attachment) {
       return await createNewComplain({
-        citizen_id: user._id,
+        citizen_id,
         address,
         ward,
         description,

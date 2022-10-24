@@ -1,4 +1,4 @@
-const { complainsCollection } = require("../model/Users");
+const { complainsCollection, votesCollection } = require("../model/Users");
 const { citizensCollection } = require("../model/Users");
 
 const findComplainByProperty = async (key, value) => {
@@ -7,6 +7,10 @@ const findComplainByProperty = async (key, value) => {
   }
 
   return await citizensCollection.findOne({ [key]: value });
+};
+
+const getComplains = () => {
+  return complainsCollection.find({}).toArray();
 };
 
 const createNewComplain = async ({
@@ -32,4 +36,8 @@ const createNewComplain = async ({
     submission_date: new Date(),
   });
 };
-module.exports = { createNewComplain, findComplainByProperty };
+module.exports = {
+  createNewComplain,
+  findComplainByProperty,
+  getComplains,
+};

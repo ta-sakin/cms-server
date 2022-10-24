@@ -55,6 +55,7 @@ const tokenControllers = async (req, res, next) => {
   const token = jwt.sign(payLoad, process.env.JWT_SECRET_KEY, {
     expiresIn: "1d",
   });
+
   res.send(token);
 };
 module.exports = {
