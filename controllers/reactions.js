@@ -1,10 +1,9 @@
-const { putUpvotes, getVotesByUserId } = require("../service/reactionsDbOp");
+const { putVotes, getVotesByUserId } = require("../service/reactionsDbOp");
 
-const updateUpvote = async (req, res, next) => {
+const updateVote = async (req, res, next) => {
   const data = req.body;
   try {
-    const result = await putUpvotes(data);
-    console.log("upvote", result);
+    const result = await putVotes(data);
     res.status(201).json(result);
   } catch (error) {
     console.log(error);
@@ -20,4 +19,4 @@ const getReactionsByUserId = async (req, res, next) => {
     console.log(error);
   }
 };
-module.exports = { updateUpvote, getReactionsByUserId };
+module.exports = { updateVote, getReactionsByUserId };

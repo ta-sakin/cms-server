@@ -1,11 +1,9 @@
-const {
-  complainControllers,
-  getComplainsControllers,
-} = require("../controllers/complain");
+const complainsController = require("../controllers/complain");
 
 const router = require("express").Router();
 
-router.post("/complain", complainControllers);
-router.get("/allcomplains", getComplainsControllers);
+router.post("/complain", complainsController.submitComplain);
+router.get("/allcomplains", complainsController.getAllComplains);
+router.put("/complain", complainsController.updateComplain);
 
 module.exports = router;

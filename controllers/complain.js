@@ -1,7 +1,11 @@
 const { complainService } = require("../service/complain");
-const { getComplains, putUpvotes } = require("../service/complainsFunc");
+const {
+  getComplains,
+  putVotes,
+  updateComplainsReactions,
+} = require("../service/complainsFunc");
 
-const complainControllers = async (req, res, next) => {
+const submitComplain = async (req, res, next) => {
   let { address, ward, description, imgUrls, type, phone } = req.body;
   const user = req.user;
   if (!imgUrls) imgUrls = [];
@@ -38,7 +42,7 @@ const complainControllers = async (req, res, next) => {
   }
 };
 
-const getComplainsControllers = async (req, res, next) => {
+const getAllComplains = async (req, res, next) => {
   try {
     const data = await getComplains();
     return res.status(201).json({ message: "Successful", data });
@@ -48,7 +52,19 @@ const getComplainsControllers = async (req, res, next) => {
   }
 };
 
+const updateComplain = async (req, res, next) => {
+  try {
+    const data = req.body;
+    const result = await updateComplainsReactions(data);
+    res.status(201).json(result);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 module.exports = {
-  complainControllers,
-  getComplainsControllers,
+  submitComplain,
+  getAllComplains,
+  updateComplain,
 };
