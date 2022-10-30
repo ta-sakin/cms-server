@@ -50,34 +50,45 @@ const postComment = async (comment) => {
 // };
 
 const getCommentsByComplainId = async (complainId) => {
-  const promises = [];
-  try {
-    const comments = await commentsCollection
-      .find({ complain_id: complainId })
-      .toArray();
+  // const commentDetails = [];
 
-    comments.forEach((comment) => {
-      promises.push(
-        citizensCollection.findOne({
-          _id: ObjectId(comment.citizen_id),
-        })
-      );
-    });
+  const comments = await commentsCollection
+    .find({ complain_id: complainId })
+    .toArray();
 
-    const citizenDetails = [];
-    const citizens = await Promise.all(promises);
-    citizens.forEach((citizen) => {
-      citizenDetails.push({ name: citizen.name, ward: citizen.ward });
-    });
+  // for (const comment of comments) {
+  //   const citizen = await citizensCollection.findOne({
+  //     _id: ObjectId(comment.citizen_id),
+  //   });
 
-    for (let i = 0; i < comments.length; i++) {
-      comments[i].name = citizenDetails[i].name;
-      comments[i].ward = citizenDetails[i].ward;
-    }
-    return comments;
-  } catch (error) {
-    console.log("error", error);
-  }
+  //   commentDetails.push({
+  //     _id: comment._id,
+  //     complainId: comment.complain_id,
+  //     citizenId: comment.citizen_id,
+  //     comment: comment.comment,
+  //     name: citizen.name,
+  //     ward: citizen.ward,
+  //     date: comment.createdAt,
+  //   });
+  // }
+  const commentDetails = await Promise.all(
+    comments.map(async (comment) => {
+      const citizen = await citizensCollection.findOne({
+        _id: ObjectId(comment.citizen_id),
+      });
+
+      return {
+        _id: comment._id,
+        complainId: comment.complain_id,
+        citizenId: comment.citizen_id,
+        comment: comment.comment,
+        name: citizen.name,
+        ward: citizen.ward,
+        date: comment.createdAt,
+      };
+    })
+  );
+  return commentDetails;
 };
 
 module.exports = {

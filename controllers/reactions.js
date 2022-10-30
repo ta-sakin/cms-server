@@ -42,12 +42,12 @@ const getComments = async (req, res, next) => {
   const complainId = req.params.id;
   try {
     const data = await getCommentsByComplainId(complainId);
-    console.log("controllers", data);
     return res.status(201).json(data);
   } catch (error) {
     console.log(error);
   }
 };
+
 module.exports = {
   updateVote,
   getReactionsByUserId,

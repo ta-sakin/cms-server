@@ -1,4 +1,5 @@
 const { cloudinary } = require("../utils/cloudinary");
+
 const {
   createNewComplain,
   findComplainByProperty,
@@ -12,6 +13,7 @@ const complainService = async ({
   imgUrls,
   complainType,
   phone,
+  category,
 }) => {
   try {
     const promises = [];
@@ -41,6 +43,7 @@ const complainService = async ({
         description,
         attachment,
         complainType,
+        category,
       });
     }
   } catch (error) {
@@ -49,6 +52,17 @@ const complainService = async ({
   }
 };
 
+// const classifyComplain = (description) => {
+//   natural.BayesClassifier.load(
+//     "classifier.json",
+//     null,
+//     function (err, classifier) {
+//       return classifier.classify(description);
+//     }
+//   );
+// };
+
 module.exports = {
   complainService,
+  // classifyComplain,
 };

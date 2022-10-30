@@ -4,6 +4,7 @@ const {
   putVotes,
   updateComplainsReactions,
 } = require("../service/complainsFunc");
+var natural = require("natural");
 
 const submitComplain = async (req, res, next) => {
   let { address, ward, description, imgUrls, type, phone } = req.body;
@@ -23,23 +24,38 @@ const submitComplain = async (req, res, next) => {
     complainType = "private";
   }
 
-  try {
-    const data = await complainService({
-      citizen_id: user._id,
-      address,
-      ward,
-      description,
-      imgUrls,
-      complainType,
-      phone,
-    });
-    if (data) {
-      return res.status(201).json({ message: "Submission successful", data });
+  const classifyComplain = async (description, callback) => {
+    var classifier = new natural.BayesClassifier();
+    natural.BayesClassifier.load(
+      "classifier.json",
+      null,
+      function (err, classifier) {
+        const category = classifier.classify(description);
+        return callback(category);
+      }
+    );
+  };
+
+  classifyComplain(description, async function (category) {
+    try {
+      const data = await complainService({
+        citizen_id: user._id,
+        address,
+        ward,
+        description,
+        imgUrls,
+        complainType,
+        phone,
+        category,
+      });
+      if (data) {
+        return res.status(201).json({ message: "Submission successful", data });
+      }
+    } catch (error) {
+      console.log(error);
+      next(error);
     }
-  } catch (error) {
-    console.log(error);
-    next(error);
-  }
+  });
 };
 
 const getAllComplains = async (req, res, next) => {
