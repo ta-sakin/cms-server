@@ -18,6 +18,7 @@ const createNewUser = ({ name, email, phone, ward, address }) => {
     address,
     total_complaints: 0,
     status: "active",
+    createdAt: new Date(),
   });
 };
 

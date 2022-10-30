@@ -6,6 +6,6 @@ const reactionsRoutes = require("./reactions");
 
 router.use("/api/auth", authRoutes);
 router.use("/api", authenticate, complainRoutes);
-router.use("/api", authenticate, reactionsRoutes);
+router.use("/api/react", authenticate, reactionsRoutes);
 
 module.exports = router;

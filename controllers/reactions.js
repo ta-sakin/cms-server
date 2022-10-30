@@ -1,4 +1,9 @@
-const { putVotes, getVotesByUserId } = require("../service/reactionsDbOp");
+const {
+  putVotes,
+  getVotesByUserId,
+  postComment,
+  getCommentsByComplainId,
+} = require("../service/reactionsDbOp");
 
 const updateVote = async (req, res, next) => {
   const data = req.body;
@@ -19,4 +24,33 @@ const getReactionsByUserId = async (req, res, next) => {
     console.log(error);
   }
 };
-module.exports = { updateVote, getReactionsByUserId };
+
+const createCommment = async (req, res, next) => {
+  const comment = req.body;
+  console.log(comment);
+  try {
+    if (comment) {
+      const data = await postComment(comment);
+      return res.status(201).json(data);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const getComments = async (req, res, next) => {
+  const complainId = req.params.id;
+  try {
+    const data = await getCommentsByComplainId(complainId);
+    console.log("controllers", data);
+    return res.status(201).json(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports = {
+  updateVote,
+  getReactionsByUserId,
+  createCommment,
+  getComments,
+};

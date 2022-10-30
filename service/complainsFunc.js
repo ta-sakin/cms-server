@@ -54,6 +54,7 @@ const createNewComplain = async ({
     submission_date: new Date(),
   });
 };
+
 module.exports = {
   createNewComplain,
   findComplainByProperty,
