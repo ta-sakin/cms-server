@@ -24,6 +24,10 @@ const postComment = async (comment) => {
   return await commentsCollection.insertOne(comment);
 };
 
+const findCommentsPerComplain = async (cid) => {
+  return await commentsCollection.countDocuments({ complain_id: cid });
+};
+
 // const getCommentDetails = async (id) => {
 //   const commentDetails = [];
 //   const comments = await commentsCollection
@@ -91,9 +95,43 @@ const getCommentsByComplainId = async (complainId) => {
   return commentDetails;
 };
 
+const getCurrentUsersVote = async (cid, uid) => {
+  return await votesCollection.findOne({
+    $and: [
+      {
+        complain_id: cid,
+      },
+      { citizen_id: uid },
+    ],
+  });
+};
+const getVotesByComplainId = async (id) => {
+  const totalUpvote = await votesCollection.countDocuments({
+    $and: [
+      {
+        complain_id: id,
+      },
+      { upvote: true },
+    ],
+  });
+  const totalDownvote = await votesCollection.countDocuments({
+    $and: [
+      {
+        complain_id: id,
+      },
+      { downvote: true },
+    ],
+  });
+
+  return { totalUpvote, totalDownvote };
+};
+
 module.exports = {
   putVotes,
   getVotesByUserId,
   postComment,
   getCommentsByComplainId,
+  getVotesByComplainId,
+  getCurrentUsersVote,
+  findCommentsPerComplain,
 };

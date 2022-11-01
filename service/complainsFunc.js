@@ -58,9 +58,13 @@ const createNewComplain = async ({
   }
 };
 
+const findUserByComplain = async (uid) => {
+  return await citizensCollection.findOne({ _id: ObjectId(uid) });
+};
 module.exports = {
   createNewComplain,
   findComplainByProperty,
   getComplains,
   updateComplainsReactions,
+  findUserByComplain,
 };

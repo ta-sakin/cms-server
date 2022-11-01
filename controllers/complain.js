@@ -3,8 +3,10 @@ const {
   getComplains,
   putVotes,
   updateComplainsReactions,
+  findUserByComplain,
 } = require("../service/complainsFunc");
 var natural = require("natural");
+const { findCommentsPerComplain } = require("../service/reactionsDbOp");
 
 const submitComplain = async (req, res, next) => {
   let { address, ward, description, imgUrls, type, phone } = req.body;
@@ -79,8 +81,19 @@ const updateComplain = async (req, res, next) => {
   }
 };
 
+const findUserName = async (req, res, next) => {
+  const { uid, cid } = req.query;
+  try {
+    const data = await findUserByComplain(uid);
+    const total = await findCommentsPerComplain(cid);
+
+    res.status(200).json([data.name, total]);
+  } catch (error) {}
+};
+
 module.exports = {
   submitComplain,
   getAllComplains,
   updateComplain,
+  findUserName,
 };

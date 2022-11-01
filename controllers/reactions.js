@@ -3,6 +3,8 @@ const {
   getVotesByUserId,
   postComment,
   getCommentsByComplainId,
+  getVotesByComplainId,
+  getCurrentUsersVote,
 } = require("../service/reactionsDbOp");
 
 const updateVote = async (req, res, next) => {
@@ -13,6 +15,23 @@ const updateVote = async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
+};
+
+const getVotes = async (req, res, next) => {
+  const { cid, uid } = req.query;
+  try {
+    const data = await getVotesByComplainId(cid);
+    let result = await getCurrentUsersVote(cid, uid);
+    if (result === null) {
+      result = {
+        citizen_id: uid,
+        complain_id: cid,
+        downvote: false,
+        upvote: false,
+      };
+    }
+    return res.status(201).json([data, result]);
+  } catch (error) {}
 };
 
 const getReactionsByUserId = async (req, res, next) => {
@@ -27,9 +46,8 @@ const getReactionsByUserId = async (req, res, next) => {
 
 const createCommment = async (req, res, next) => {
   const comment = req.body;
-  console.log(comment);
   try {
-    if (comment) {
+    if (comment.comment) {
       const data = await postComment(comment);
       return res.status(201).json(data);
     }
@@ -53,4 +71,5 @@ module.exports = {
   getReactionsByUserId,
   createCommment,
   getComments,
+  getVotes,
 };
