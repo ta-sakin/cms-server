@@ -10,8 +10,15 @@ const findComplainByProperty = async (key, value) => {
   return await citizensCollection.findOne({ [key]: value });
 };
 
-const getComplains = () => {
-  return complainsCollection.find({}).toArray();
+const getComplains = async ({ filters, page, count }) => {
+  if (filters === undefined) {
+    return await complainsCollection
+      .find({})
+      .skip(parseInt(page))
+      .limit(parseInt(count))
+      .toArray();
+  }
+  return await complainsCollection.find(filters).toArray();
 };
 
 const updateComplainsReactions = async (data) => {
@@ -61,10 +68,21 @@ const createNewComplain = async ({
 const findUserByComplain = async (uid) => {
   return await citizensCollection.findOne({ _id: ObjectId(uid) });
 };
+
+const findComplainsByUserId = (id) => {
+  return complainsCollection.find({ citizen_id: ObjectId(id) }).toArray();
+};
+
+const deleteComplainById = (id) => {
+  return complainsCollection.deleteOne({ _id: ObjectId(id) });
+};
+
 module.exports = {
   createNewComplain,
   findComplainByProperty,
   getComplains,
   updateComplainsReactions,
   findUserByComplain,
+  findComplainsByUserId,
+  deleteComplainById,
 };

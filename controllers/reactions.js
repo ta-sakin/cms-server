@@ -17,10 +17,17 @@ const updateVote = async (req, res, next) => {
   }
 };
 
-const getVotes = async (req, res, next) => {
-  const { cid, uid } = req.query;
+const getTotalVotes = async (req, res, next) => {
+  const { cid } = req.query;
   try {
     const data = await getVotesByComplainId(cid);
+    return res.status(201).json(data);
+  } catch (error) {}
+};
+
+const getUsersVotes = async (req, res, next) => {
+  const { cid, uid } = req.query;
+  try {
     let result = await getCurrentUsersVote(cid, uid);
     if (result === null) {
       result = {
@@ -30,7 +37,7 @@ const getVotes = async (req, res, next) => {
         upvote: false,
       };
     }
-    return res.status(201).json([data, result]);
+    return res.status(201).json(result);
   } catch (error) {}
 };
 
@@ -71,5 +78,6 @@ module.exports = {
   getReactionsByUserId,
   createCommment,
   getComments,
-  getVotes,
+  getTotalVotes,
+  getUsersVotes,
 };

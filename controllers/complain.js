@@ -4,9 +4,12 @@ const {
   putVotes,
   updateComplainsReactions,
   findUserByComplain,
+  findComplainsByUserId,
+  deleteComplainById,
 } = require("../service/complainsFunc");
 var natural = require("natural");
 const { findCommentsPerComplain } = require("../service/reactionsDbOp");
+const { complainsCollection } = require("../model/Users");
 
 const submitComplain = async (req, res, next) => {
   let { address, ward, description, imgUrls, type, phone } = req.body;
@@ -62,12 +65,20 @@ const submitComplain = async (req, res, next) => {
 
 const getAllComplains = async (req, res, next) => {
   try {
-    const data = await getComplains();
-    return res.status(201).json({ message: "Successful", data });
+    const queries = req.query;
+    const data = await getComplains(queries);
+    return res.status(201).json(data);
   } catch (error) {
     console.log(error);
     next(error);
   }
+};
+
+const totalComplains = async (req, res, next) => {
+  try {
+    const data = await complainsCollection.countDocuments({});
+    res.status(200).json(data);
+  } catch (error) {}
 };
 
 const updateComplain = async (req, res, next) => {
@@ -91,9 +102,27 @@ const findUserName = async (req, res, next) => {
   } catch (error) {}
 };
 
+const getComplainByUserId = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const data = await findComplainsByUserId(id);
+    res.status(200).json(data);
+  } catch (error) {}
+};
+const deleteComplain = async (req, res, next) => {
+  const id = req.params.id;
+  try {
+    const data = await deleteComplainById(id);
+    res.status(200).json(data);
+  } catch (error) {}
+};
+
 module.exports = {
   submitComplain,
   getAllComplains,
   updateComplain,
   findUserName,
+  getComplainByUserId,
+  deleteComplain,
+  totalComplains,
 };
