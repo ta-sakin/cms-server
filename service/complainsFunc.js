@@ -14,6 +14,7 @@ const getComplains = async ({ filters, page, count }) => {
   if (filters === undefined) {
     return await complainsCollection
       .find({})
+      .sort({ _id: -1 })
       .skip(parseInt(page))
       .limit(parseInt(count))
       .toArray();
@@ -48,7 +49,7 @@ const createNewComplain = async ({
   category,
 }) => {
   if (category) {
-    return await complainsCollection.insertOne({
+    const result = await complainsCollection.insertOne({
       citizen_id,
       address,
       ward,
@@ -62,6 +63,17 @@ const createNewComplain = async ({
       total_downvotes: 0,
       submission_date: new Date(),
     });
+
+    // const complainsByUser = await complainsCollection.countDocuments({
+    //   citizen_id,
+    // });
+
+    // await citizensCollection.updateOne(
+    //   { _id: citizen_id },
+    //   { $set: { total_complaints: complainsByUser } }
+    // );
+
+    return result;
   }
 };
 
@@ -77,6 +89,17 @@ const deleteComplainById = (id) => {
   return complainsCollection.deleteOne({ _id: ObjectId(id) });
 };
 
+const getStatusCountByUser = async (id) => {
+  let status = {};
+  const pendingApproval = await complainsCollection.countDocuments({
+    $and: [{ citizen_id: ObjectId(id) }, { status: "Pending approval" }],
+  });
+  const totalComplains = await complainsCollection.countDocuments({
+    citizen_id: ObjectId(id),
+  });
+  return (status = { pendingApproval, totalComplains });
+};
+
 module.exports = {
   createNewComplain,
   findComplainByProperty,
@@ -85,4 +108,5 @@ module.exports = {
   findUserByComplain,
   findComplainsByUserId,
   deleteComplainById,
+  getStatusCountByUser,
 };

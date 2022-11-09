@@ -9,5 +9,6 @@ router.delete("/complain/:id", complainsController.deleteComplain);
 router.get("/allcomplains", complainsController.getAllComplains);
 router.get("/totalcomplains", complainsController.totalComplains);
 router.put("/complain", complainsController.updateComplain);
+router.get("/complain/:id", complainsController.getCountComplaintStatus);
 
 module.exports = router;

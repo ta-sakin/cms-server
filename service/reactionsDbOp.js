@@ -75,6 +75,7 @@ const getCommentsByComplainId = async (complainId) => {
   //     date: comment.createdAt,
   //   });
   // }
+  
   const commentDetails = await Promise.all(
     comments.map(async (comment) => {
       const citizen = await citizensCollection.findOne({
@@ -105,6 +106,8 @@ const getCurrentUsersVote = async (cid, uid) => {
     ],
   });
 };
+
+
 const getVotesByComplainId = async (id) => {
   const totalUpvote = await votesCollection.countDocuments({
     $and: [

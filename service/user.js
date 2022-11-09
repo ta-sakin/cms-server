@@ -22,7 +22,14 @@ const createNewUser = ({ name, email, phone, ward, address }) => {
   });
 };
 
+const patchUser = async (id, data) => {
+  return await citizensCollection.updateOne(
+    { _id: ObjectId(id) },
+    { $set: data }
+  );
+};
 module.exports = {
   findUserByProperty,
   createNewUser,
+  patchUser,
 };
