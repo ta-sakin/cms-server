@@ -13,13 +13,13 @@ const findComplainByProperty = async (key, value) => {
 const getComplains = async ({ filters, page, count }) => {
   if (filters === undefined) {
     return await complainsCollection
-      .find({})
+      .find({ complainType: { $ne: "private" } })
       .sort({ _id: -1 })
       .skip(parseInt(page))
       .limit(parseInt(count))
       .toArray();
   }
-  return await complainsCollection.find(filters).toArray();
+  return await complainsCollection.find(filters).sort({ _id: -1 }).toArray();
 };
 
 const updateComplainsReactions = async (data) => {
@@ -82,7 +82,10 @@ const findUserByComplain = async (uid) => {
 };
 
 const findComplainsByUserId = (id) => {
-  return complainsCollection.find({ citizen_id: ObjectId(id) }).toArray();
+  return complainsCollection
+    .find({ citizen_id: ObjectId(id) })
+    .sort({ _id: -1 })
+    .toArray();
 };
 
 const deleteComplainById = (id) => {
