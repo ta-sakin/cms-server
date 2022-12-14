@@ -14,6 +14,7 @@ const updateVote = async (req, res, next) => {
     res.status(201).json(result);
   } catch (error) {
     console.log(error);
+    next(error)
   }
 };
 
@@ -22,7 +23,10 @@ const getTotalVotes = async (req, res, next) => {
   try {
     const data = await getVotesByComplainId(cid);
     return res.status(201).json(data);
-  } catch (error) {}
+  } catch (error) {
+    next(error)
+
+  }
 };
 
 const getUsersVotes = async (req, res, next) => {
@@ -38,7 +42,10 @@ const getUsersVotes = async (req, res, next) => {
       };
     }
     return res.status(201).json(result);
-  } catch (error) {}
+  } catch (error) {
+    next(error)
+
+  }
 };
 
 const getReactionsByUserId = async (req, res, next) => {
@@ -48,6 +55,7 @@ const getReactionsByUserId = async (req, res, next) => {
     return res.status(201).json(data);
   } catch (error) {
     console.log(error);
+    next(error)
   }
 };
 
@@ -60,6 +68,7 @@ const createCommment = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error)
   }
 };
 
@@ -70,6 +79,7 @@ const getComments = async (req, res, next) => {
     return res.status(201).json(data);
   } catch (error) {
     console.log(error);
+    next(error)
   }
 };
 

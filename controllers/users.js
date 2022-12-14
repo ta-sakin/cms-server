@@ -1,11 +1,17 @@
-const { findUserByProperty, patchUser } = require("../service/user");
+const {
+  findUserByProperty,
+  patchUser,
+  getUsersCount,
+} = require("../service/user");
 
 const getUserById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const result = await findUserByProperty("_id", id);
     res.status(200).json(result);
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
 
 const updateUser = async (req, res, next) => {
@@ -18,6 +24,17 @@ const updateUser = async (req, res, next) => {
     }
   } catch (error) {
     console.log(error);
+    next(error);
   }
 };
-module.exports = { getUserById, updateUser };
+
+const getAllUsers = async (req, res, next) => {
+  try {
+    const data = await getUsersCount();
+    res.status(200).json(data);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+module.exports = { getUserById, updateUser, getAllUsers };

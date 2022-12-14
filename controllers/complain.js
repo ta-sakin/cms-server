@@ -8,13 +8,15 @@ const {
   deleteComplainById,
   getStatusCountByUser,
 } = require("../service/complainsFunc");
-var natural = require("natural");
+const natural = require("natural");
 const { findCommentsPerComplain } = require("../service/reactionsDbOp");
 const { complainsCollection } = require("../model/Users");
+const { findUserByProperty } = require("../service/user");
 
 const submitComplain = async (req, res, next) => {
   let { address, ward, description, imgUrls, type, phone } = req.body;
-  const user = req.user;
+  const user = await findUserByProperty("phone", phone);
+
   if (!imgUrls) imgUrls = [];
   if (!address || !ward || !description) {
     return res.status(400).json({ message: "Invalid information" });
@@ -79,7 +81,10 @@ const totalComplains = async (req, res, next) => {
   try {
     const data = await complainsCollection.countDocuments({});
     res.status(200).json(data);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };
 
 const updateComplain = async (req, res, next) => {
@@ -100,7 +105,10 @@ const findUserName = async (req, res, next) => {
     const total = await findCommentsPerComplain(cid);
 
     res.status(200).json([data.name, total]);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };
 
 const getComplainByUserId = async (req, res, next) => {
@@ -108,14 +116,21 @@ const getComplainByUserId = async (req, res, next) => {
   try {
     const data = await findComplainsByUserId(id);
     res.status(200).json(data);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };
+
 const deleteComplain = async (req, res, next) => {
   const id = req.params.id;
   try {
     const data = await deleteComplainById(id);
     res.status(200).json(data);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };
 
 const getCountComplaintStatus = async (req, res, next) => {
@@ -123,7 +138,10 @@ const getCountComplaintStatus = async (req, res, next) => {
     const id = req.params;
     const data = await getStatusCountByUser(id);
     res.status(200).json(data);
-  } catch (error) {}
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
 };
 
 module.exports = {
