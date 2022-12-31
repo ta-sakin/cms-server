@@ -25,16 +25,21 @@ const getComplains = async ({ filters, page, count }) => {
 
 const updateComplainsReactions = async (data) => {
   const filter = { _id: ObjectId(data.complain_id) };
-
+  let updateData = { ...data };
   if (data.total_upvotes < 0) {
-    data.total_upvotes = 0;
+    updateData = {
+      ...data,
+      total_upvotes: 0,
+    };
   }
   if (data.total_downvotes < 0) {
-    data.total_downvotes = 0;
+    updateData = {
+      ...data,
+      total_downvotes: 0,
+    };
   }
-
   const update = {
-    $set: { ...data },
+    $set: updateData,
   };
 
   return await complainsCollection.updateOne(filter, update);
@@ -92,15 +97,20 @@ const findComplainsByWard = async (ward, filter = {}) => {
     let complains = [];
     const public = await complainsCollection
       .find({ $and: [{ ward }, filter] })
+      .sort({ _id: -1 })
       .toArray();
     filter = { ...filter, complainType: "public-anonymous" };
     const publicAno = await complainsCollection
       .find({ $and: [{ ward }, filter] })
+      .sort({ _id: -1 })
       .toArray();
     complains = public.concat(publicAno);
     return complains;
   }
-  return await complainsCollection.find({ $and: [{ ward }, filter] }).toArray();
+  return await complainsCollection
+    .find({ $and: [{ ward }, filter] })
+    .sort({ _id: -1 })
+    .toArray();
 };
 
 const findComplainsByUserId = (id) => {
@@ -165,6 +175,7 @@ const turnObjPairingCount = async (label, search) => {
   if (complains.length < 1) {
     return {};
   }
+
   let obj = {};
   for (const complain of complains) {
     let key = complain[label];

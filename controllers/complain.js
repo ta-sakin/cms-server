@@ -7,16 +7,22 @@ const {
   findComplainsByUserId,
   deleteComplainById,
   getStatusCountByUser,
+  countComplainsByStatus,
 } = require("../service/complainsFunc");
 const natural = require("natural");
 const { findCommentsPerComplain } = require("../service/reactionsDbOp");
 const { complainsCollection } = require("../model/Users");
 const { findUserByProperty } = require("../service/user");
+const { getStatusDateByCID } = require("../service/statusDates");
+const { ObjectId } = require("mongodb");
 
 const submitComplain = async (req, res, next) => {
   let { address, ward, description, imgUrls, type, phone } = req.body;
   const user = await findUserByProperty("phone", phone);
 
+  if (user?.status === "blocked") {
+    return res.status(403).json("User has been blocked");
+  }
   if (!imgUrls) imgUrls = [];
   if (!address || !ward || !description) {
     return res.status(400).json({ message: "Invalid information" });
@@ -33,7 +39,7 @@ const submitComplain = async (req, res, next) => {
   }
 
   const classifyComplain = async (description, callback) => {
-    var classifier = new natural.BayesClassifier();
+    let classifier = new natural.BayesClassifier();
     natural.BayesClassifier.load(
       "classifier.json",
       null,
@@ -135,11 +141,26 @@ const deleteComplain = async (req, res, next) => {
 
 const getCountComplaintStatus = async (req, res, next) => {
   try {
-    const id = req.params;
-    const data = await getStatusCountByUser(id);
+    const { id } = req.params;
+    // const data = findComplainsByUserId(id);
+    // const data = await getStatusCountByUser(id);
+    const objectId = ObjectId(id);
+
+    const data = await countComplainsByStatus("citizen_id", objectId);
     res.status(200).json(data);
   } catch (error) {
     console.log(error);
+    next(error);
+  }
+};
+
+const getStatusDatesByCID = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const data = await getStatusDateByCID(id);
+    res.status(200).json(data);
+  } catch (error) {
     next(error);
   }
 };
@@ -153,4 +174,5 @@ module.exports = {
   deleteComplain,
   totalComplains,
   getCountComplaintStatus,
+  getStatusDatesByCID,
 };

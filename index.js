@@ -28,7 +28,7 @@ app.use((err, req, res, next) => {
   await client.connect();
 
   app.get("/", (req, res) => {
-    res.send("You ain't supposed to be here!");
+    res.send("What are you doing in the CMS server!");
   });
 
   app.listen(port, () => {
