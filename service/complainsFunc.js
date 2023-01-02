@@ -11,8 +11,28 @@ const findComplainByProperty = async (key, value) => {
   return await citizensCollection.findOne({ [key]: value });
 };
 
-const getComplains = async ({ filters, page, count }) => {
+const getComplains = async ({ filters, page, count, sort }) => {
+  const allFilters = { $and: [{ complainType: { $ne: "private" } }, filters] };
+  //without filter
   if (filters === undefined) {
+    if (sort) {
+      if (sort === "upvote") {
+        return await complainsCollection
+          .find({ complainType: { $ne: "private" } })
+          .sort({ total_upvotes: -1 })
+          .skip(parseInt(page))
+          .limit(parseInt(count))
+          .toArray();
+      } else if (sort === "downvote") {
+        return await complainsCollection
+          .find({ complainType: { $ne: "private" } })
+          .sort({ total_downvotes: -1 })
+          .skip(parseInt(page))
+          .limit(parseInt(count))
+          .toArray();
+      }
+    }
+    //without sort
     return await complainsCollection
       .find({ complainType: { $ne: "private" } })
       .sort({ _id: -1 })
@@ -20,7 +40,24 @@ const getComplains = async ({ filters, page, count }) => {
       .limit(parseInt(count))
       .toArray();
   }
-  return await complainsCollection.find(filters).sort({ _id: -1 }).toArray();
+
+  //with filter and sort
+  if (sort) {
+    if (sort === "upvote") {
+      return await complainsCollection
+        .find(allFilters)
+        .sort({ total_upvotes: -1 })
+        .toArray();
+    }
+    if (sort === "upvote") {
+      return await complainsCollection
+        .find(allFilters)
+        .sort({ total_upvotes: -1 })
+        .toArray();
+    }
+  }
+  //without sort
+  return await complainsCollection.find(allFilters).sort({ _id: -1 }).toArray();
 };
 
 const updateComplainsReactions = async (data) => {
@@ -206,6 +243,13 @@ const updateComplainStatus = async (complain_id, status) => {
   );
 };
 
+const editComplainCategory = async (complain_id, category) => {
+  return await complainsCollection.updateOne(
+    { _id: ObjectId(complain_id) },
+    { $set: { category } }
+  );
+};
+
 module.exports = {
   createNewComplain,
   findComplainByProperty,
@@ -221,4 +265,5 @@ module.exports = {
   countComplainByType,
   findComplainsByWard,
   updateComplainStatus,
+  editComplainCategory,
 };
