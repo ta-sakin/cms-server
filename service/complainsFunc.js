@@ -35,7 +35,7 @@ const getComplains = async ({ filters, page, count, sort }) => {
     //without sort
     return await complainsCollection
       .find({ complainType: { $ne: "private" } })
-      .sort({ _id: -1 })
+      .sort({ submission_date: -1 })
       .skip(parseInt(page))
       .limit(parseInt(count))
       .toArray();
@@ -57,7 +57,10 @@ const getComplains = async ({ filters, page, count, sort }) => {
     }
   }
   //without sort
-  return await complainsCollection.find(allFilters).sort({ _id: -1 }).toArray();
+  return await complainsCollection
+    .find(allFilters)
+    .sort({ submission_date: -1 })
+    .toArray();
 };
 
 const updateComplainsReactions = async (data) => {
@@ -134,26 +137,26 @@ const findComplainsByWard = async (ward, filter = {}) => {
     let complains = [];
     const public = await complainsCollection
       .find({ $and: [{ ward }, filter] })
-      .sort({ _id: -1 })
+      .sort({ submission_date: -1 })
       .toArray();
     filter = { ...filter, complainType: "public-anonymous" };
     const publicAno = await complainsCollection
       .find({ $and: [{ ward }, filter] })
-      .sort({ _id: -1 })
+      .sort({ submission_date: -1 })
       .toArray();
     complains = public.concat(publicAno);
     return complains;
   }
   return await complainsCollection
     .find({ $and: [{ ward }, filter] })
-    .sort({ _id: -1 })
+    .sort({ submission_date: -1 })
     .toArray();
 };
 
 const findComplainsByUserId = (id) => {
   return complainsCollection
     .find({ citizen_id: ObjectId(id) })
-    .sort({ _id: -1 })
+    .sort({ submission_date: -1 })
     .toArray();
 };
 
