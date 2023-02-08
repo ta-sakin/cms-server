@@ -4,13 +4,13 @@ const port = process.env.PORT || 5000;
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 const morgan = require("morgan");
+const xss = require("xss-clean");
+const helmet = require("helmet");
+app.set("trust proxy", 1);
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb", extended: true }));
-// const corsOptions = {
-//   origin: "*",
-//   // credentials: true, //access-control-allow-credentials:true
-//   // optionSuccessStatus: 200,
-// };
+app.use(helmet());
+app.use(xss());
 app.use(cors());
 const connectDB = require("./db");
 const uri = require("./dbUri");
@@ -27,7 +27,7 @@ app.use((err, req, res, next) => {
   const client = connectDB(uri);
   await client.connect();
 
-  app.get("/", (req, res) => {
+  app.get("/", (_, res) => {
     res.send("What are you doing in the CMS server!");
   });
 
